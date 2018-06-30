@@ -1,0 +1,35 @@
+#!/bin/bash
+
+iFile=${1%.*}
+type=$2   # Pure or Mixed
+band=$3   # P or Q or R
+xMin=$4
+xMax=$5
+yMin=$6
+
+if [ -z "$iFile" -o -z "$type" -o -z "$band" ]
+then
+	echo "Usage:"
+	echo "      $ bandsAssignation.sh iFile.inp { Pure | Mixed } { O | P | Q | R | S } [ Emin ] [ Emax ] [Imin]"
+	exit
+fi
+
+dataFile="${iFile}${type}Spec${band}.dat"
+
+if [ -z "$xMin" ]
+then
+	xMin=`grep "^#" $dataFile | sort -n -k 2 | head -n1 | awk '{print $2}'`
+fi
+
+if [ -z "$xMax" ]
+then
+	xMax=`grep "^#" $dataFile | sort -n -k 2 | tail -n1 | awk '{print $2}'`
+fi
+
+if [ -z "$yMin" ]
+then
+	yMin=`grep "^#" $dataFile | sort -n -k 3 | head -n1 | awk '{print $3}'`
+fi
+
+grep "^#" $dataFile | sort -n -r -k 3 | awk '($2>='$xMin' && $2<='$xMax' && $3>='$yMin'){print $0}' | sed -E 's/^#//g'
+# grep "^#" $dataFile | sort -n -k 2 | awk '($2>='$xMin' && $2<='$xMax' && $3>='$yMax'){print $0}' | sed -E 's/^#[[:blank:]]+//g'

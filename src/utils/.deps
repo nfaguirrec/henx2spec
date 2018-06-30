@@ -1,0 +1,7 @@
+Morse.f90: use UnitsConverter_
+Morse.f90: use Grid_
+Morse.f90: use NFunction_
+Morse.f90: use ThrularNumerovMethod_
+NFunction.f90: use Grid_
+NIntegration.f90: use Grid_
+NIntegration.f90: use NFunction_

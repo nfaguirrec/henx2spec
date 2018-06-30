@@ -1,0 +1,126 @@
+#!/bin/bash
+
+iFile=${1%.*}
+# J0_on=$2
+JmaxPos=$2
+#yMinUser=$2
+#yMaxUser=$3
+
+if [ -z "$iFile" ]
+then
+	cat <<EOF
+Usage:
+	plotStates.sh iFile.inp -J0
+EOF
+	exit
+fi
+
+if [ "$J0_on" == "-J0" ]
+then
+	J0_on="T"
+else
+	J0_on="F"
+fi
+
+xShift="0.125"
+
+xvals=( `awk '($1!~/^#.*$/ && $1!~/^[[:blank:]]*$/){map[$1]=1}END{for( item in map ) print item}' ${iFile}MixedStates.dat | sort -n` )
+yvals=( `awk '($1!~/^#.*$/ && $1!~/^[[:blank:]]*$/){map[$2]=1}END{for( item in map ) print item}' ${iFile}MixedStates.dat | sort -n` )
+
+xMin=${xvals[0]}
+# xMax=${xvals[$(( ${#xvals[@]}-1 ))]}
+xMax=${xvals[$(( 2*$JmaxPos ))]}
+
+if [ -z "$yMinUser" ]
+then
+	yMin=${yvals[0]}
+else
+	yMin=$yMinUser
+fi
+
+if [ -z "$yMaxUser" ]
+then
+	yMax=${yvals[$(( ${#yvals[@]}-1 ))]}
+else
+	yMax=$yMaxUser
+fi
+
+dX=`echo "${xvals[1]} - ${xvals[0]}" | bc -l`
+rangeY=`echo "$yMax-($yMin)" | bc -l`
+
+JInt="`seq 0 40`"
+JHalfInt="`seq 1 2 40 | awk '{printf $1"/2 "}'`"
+
+cat > .value <<EOF
+	set termopt enhanced
+# 	set xlabel "Total angular moment ( J )" font "Serif,10"
+# 	set ylabel "Energy (cm^{-1})" font "Serif,10"
+	set xlabel "Momento angular total ( J )" font "Serif,10"
+	set ylabel "Energía (cm^{-1})" font "Serif,10" offset 1.0,0.0
+	set format y "%3.1f"
+	unset key
+EOF
+
+isBoson=`grep "^J =" ${iFile%.*}.out | head -n1 | awk '{if($3==0.0) print "true"}'`
+
+if [ "$isBoson" = "true" ]
+then
+	echo "set xtics out nomirror scale 0 ( \\" >> .value
+	for J in $JInt
+	do
+		if [ ! "$J" = "`echo $JInt | awk '{print $NF}'`" ]
+		then
+			echo "\"$J\" $J, \\" >> .value
+		else
+			echo "\"$J\" $J \\" >> .value
+		fi
+	done
+	echo ")" >> .value
+else
+	echo "set xtics out nomirror scale 0 ( \\" >> .value
+	for J in $JHalfInt
+	do
+		numericJ=`echo "$J" | bc -l`
+		
+		if [ ! "$J" = "`echo $JHalfInt | awk '{print $NF}'`" ]
+		then
+			echo "\"$J\" $numericJ, \\" >> .value
+		else
+			echo "\"$J\" $numericJ \\" >> .value
+		fi
+	done
+	echo ")" >> .value
+fi
+
+if [ "$J0_on" = "F" ]
+then
+	cat >> .value <<EOF
+set size 0.5,1.0
+set ytics out nomirror
+
+# plot [$xMin-3.0*($dX):$xMax+2.0*($dX)] [$yMin-0.1*$rangeY:$yMax+0.1*$rangeY]
+plot [$xMin-2.0*($dX):$xMax+2.0*($dX)] [] \
+"${iFile}PureStates.dat" u (\$1-0.5+($xShift)):2 w l lw 2.0 lc rgb "red", \
+"${iFile}MixedStates.dat" i 0 u (\$1+($xShift)):2 w l lw 2.0 lc rgb "black", \
+"${iFile}MixedStates.dat" i 1 u (\$1-0.25+($xShift)):2 w l lw 0.3 lc rgb "blue"
+EOF
+
+elif [ "$J0_on" = "T" ]
+then
+	yvals=( `grep -E "^[[:blank:]]*$xMin" ${iFile}MixedStates.dat | awk '{print $2}' | sort -n` )
+	yMin=${yvals[0]}
+	yMax=${yvals[$(( ${#yvals[@]}-1 ))]}
+	
+	cat >> .value <<EOF
+set size 0.4,1.0
+plot [$xMin-2.0*($dX):$xMin+2.0*($dX)] [$yMin-0.05*$rangeY:$yMax+0.05*$rangeY] \
+"${iFile}PureStates.dat" u (\$1-0.5+($xShift)):2 w l lw 1.5 lc rgb "red", \
+"${iFile}MixedStates.dat" i 0 u (\$1+($xShift)):2 w l lw 1.5 lc rgb "black", \
+"${iFile}MixedStates.dat" i 1 u (\$1-0.25+($xShift)):2 w l lw 0.3 lc rgb "blue"
+EOF
+
+fi
+
+gnuplot -p .value
+
+rm .value
