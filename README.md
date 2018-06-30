@@ -109,6 +109,18 @@ The notation used to represent the states is as follows:
            |
           2S+1
 ```
+The following fragment of the output file shows the allowed transitions among vib-rotational pure states
+```
+ Transitions among pure states
+ =============================
+ 
+                     Initial State                               End State             dE         I      Gamma Type
+                     -------------                               ---------             --         -      ----- ----
+ 
+   <1a(0,0.0)^1\Sigma+(0.0,0.0)g+|
+                                           <1a(1,0.0)^1\Sigma+(0.0,0.0)g+|      -0.047243  0.024247   0.20E-03    Q
+                                           <1a(1,2.0)^1\Sigma+(0.0,0.0)g+|       1.384683  0.006855   0.20E-03    S
+```
 
 # Authors
 * Nestor F. Aguirre ( nfaguirrec@gmail.com )
