@@ -121,6 +121,12 @@ The following fragment of the output file shows the allowed transitions among vi
                             <1a(1,0.0)^1\Sigma+(0.0,0.0)g+|      -0.047243  0.024247   0.20E-03    Q
                             <1a(1,2.0)^1\Sigma+(0.0,0.0)g+|       1.384683  0.006855   0.20E-03    S
 ```
+The following commands can be used to visualize both the energetic levels and the vib-rotational Raman spectrum:
+```
+$ HenX2Spec_plotSpectra -i bosN4.inp -p -y 5000 -r -0.07 -0.02
+$ HenX2Spec_plotStates bosN4.inp
+```
+![Terminal](doc/states-spectrum.png)
 
 # Authors
 * Nestor F. Aguirre ( nfaguirrec@gmail.com )
