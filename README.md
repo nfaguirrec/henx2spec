@@ -1,3 +1,3 @@
 # henx2spec
 
-![Terminal](frames.png)
+![Terminal](doc/frames.png)
