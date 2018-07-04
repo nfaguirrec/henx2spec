@@ -19,6 +19,16 @@ details in
 
 ![Terminal](doc/intensity.png)
 
+## Authors
+* Nestor F. Aguirre ( nfaguirrec@gmail.com )
+* Maria P. de Lara-Castells ( pilar.delara.castells@csic.es )
+
+# Citing
+
+To cite the code, please proceed as follows:
+
+[![DOI](https://zenodo.org/badge/139219313.svg)](https://zenodo.org/badge/latestdoi/139219313)
+
 # Execution of the program
 
 ```
@@ -127,7 +137,3 @@ $ HenX2Spec_plotSpectra -i bosN4.inp -p -y 5000 -r -0.07 -0.02
 $ HenX2Spec_plotStates bosN4.inp
 ```
 ![Terminal](doc/states-spectrum.png)
-
-# Authors
-* Nestor F. Aguirre ( nfaguirrec@gmail.com )
-* Maria P. de Lara-Castells ( pilar.delara.castells@csic.es )
